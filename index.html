@@ -3,139 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الباحث الأكاديمي المخصص</title>
+    <title>منصة تجهيز الكتب الرقمية</title>
     <style>
-        /* CSS بسيط لتنظيم الواجهة */
+        /* ==================== 1. تصميم الصفحة والتنسيق العام ==================== */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f4f4f9;
             color: #333;
+            margin: 0;
+            padding: 0;
             text-align: right;
-            padding: 20px;
         }
+
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 30px auto;
             background: #fff;
             padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
+
         h1 {
-            color: #0056b3;
+            color: #007bff;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
-        #search-form {
-            display: flex;
-            margin-bottom: 30px;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #search-input {
-            padding: 12px;
+
+        /* ==================== 2. تصميم منطقة الكتاب القابلة للتحرير ==================== */
+        .book-template {
             border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #fcfcfc;
+            border-radius: 8px;
         }
-        #search-button {
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
+
+        /* تنسيق العنوان (H2) */
+        .book-template h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 5px;
+        }
+
+        /* تنسيق المحتوى (P) */
+        .book-template p {
+            line-height: 1.8;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        /* جعل المناطق القابلة للتحرير واضحة */
+        [contenteditable="true"] {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            transition: border-color 0.3s;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: #f9f9ff;
+        }
+
+        /* ==================== 3. تصميم الأزرار ==================== */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
             transition: background-color 0.3s;
         }
-        #search-button:hover {
-            background-color: #0056b3;
+
+        #saveBtn {
+            background-color: #28a745;
+            color: white;
         }
-        .result-item {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
+        #saveBtn:hover {
+            background-color: #218838;
         }
-        .result-item:last-child {
-            border-bottom: none;
+
+        #resetBtn {
+            background-color: #dc3545;
+            color: white;
         }
-        .result-title a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 1.2em;
-            font-weight: bold;
+        #resetBtn:hover {
+            background-color: #c82333;
         }
-        .result-snippet {
-            color: #666;
-            margin-top: 5px;
+        
+        #previewBtn {
+            background-color: #ffc107;
+            color: #333;
         }
-        .loading {
+        #previewBtn:hover {
+            background-color: #e0a800;
+        }
+
+        /* ==================== 4. تصميم التنبيهات ==================== */
+        #message {
             text-align: center;
-            font-size: 1.1em;
-            color: #007bff;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cd;
+            padding: 10px;
+            border-radius: 5px;
+            display: none; /* مخفي مبدئيًا */
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🔎 الباحث الأكاديمي المخصص</h1>
-    <p>أدخل استعلامك للحصول على نتائج بحث مُصفّاة من المصادر الأكاديمية.</p>
-
-    <form id="search-form">
-        <input type="text" id="search-input" placeholder="اكتب موضوع البحث (مثال: أثر الذكاء الاصطناعي على الاقتصاد)" required>
-        <button type="submit" id="search-button">ابحث</button>
-    </form>
+    <h1>منصة تجهيز الكتب الرقمية: قالب التحرير</h1>
     
-    <div id="results-container">
-        </div>
+    <div id="message"></div>
+
+    <div class="book-template">
+        
+        <h2>
+            <span id="bookTitle" contenteditable="true" data-placeholder="اكتب هنا عنوان الكتاب الرئيسي...">عنوان كتابي الرائع</span>
+        </h2>
+        
+        <h3>الفصل الأول: البداية</h3>
+        <p id="chapter1Content" contenteditable="true" data-placeholder="ابدأ بكتابة محتوى الفصل هنا...">
+            في هذا الفصل الافتتاحي، نبدأ رحلتنا في عالم الكتابة والإبداع. يمكن الآن تحرير هذا النص مباشرة. قم بالضغط على أي جزء من المحتوى لتفعيله وبدء الكتابة أو التعديل. سيتم حفظ أي تغييرات تقوم بها تلقائيًا عند الضغط على زر الحفظ، وستظل محفوظة حتى لو أغلقت المتصفح وأعدت فتحه. هذه الصفحة هي مساحة المحاولة والتعديلات الخاصة بك.
+        </p>
+
+        <h3>الفصل الثاني: مرحلة التعديلات</h3>
+        <p id="chapter2Content" contenteditable="true" data-placeholder="محتوى الفصل الثاني...">
+            تعتبر مرحلة التعديلات والمحاولة من أهم مراحل تجهيز الكتب. استخدم هذا القالب لتنظيم أفكارك وهيكلة فصولك قبل الانتقال إلى مرحلة النشر النهائية. لا تتردد في إضافة أي تنسيقات بسيطة مثل (Bold) أو (Italic) ضمن محرر النصوص.
+        </p>
+
+    </div>
+    <div class="controls">
+        <button id="saveBtn">حفظ التعديلات (Save)</button>
+        <button id="resetBtn">إلغاء التعديلات (Reset)</button>
+        <button id="previewBtn">عرض القالب ككتاب (Preview)</button>
+    </div>
+
 </div>
 
 <script>
-    document.getElementById('search-form').addEventListener('submit', async function(e) {
-        e.preventDefault(); // منع تحديث الصفحة التقليدي
+    // ==================== وظائف JavaScript ====================
 
-        const query = document.getElementById('search-input').value;
-        const resultsContainer = document.getElementById('results-container');
-        
-        // عرض رسالة التحميل
-        resultsContainer.innerHTML = '<div class="loading">جاري البحث، فضلاً انتظر...</div>';
-        
-        // ملاحظة: يجب أن يعمل كود Python/Flask في الخلفية على نفس الجهاز (Localhost:5000)
-        const API_ENDPOINT = 'http://127.0.0.1:5000/search?q=' + encodeURIComponent(query);
+    const BOOK_KEY = 'bookDraftContent'; // مفتاح الحفظ في Local Storage
+    const editableElements = document.querySelectorAll('[contenteditable="true"]');
+    const saveButton = document.getElementById('saveBtn');
+    const resetButton = document.getElementById('resetBtn');
+    const previewButton = document.getElementById('previewBtn');
+    const messageElement = document.getElementById('message');
 
+    /**
+     * يحفظ محتوى الكتاب الحالي في ذاكرة التخزين المحلية (Local Storage).
+     */
+    function saveContent() {
+        const bookData = {
+            title: document.getElementById('bookTitle').innerHTML,
+            chapter1: document.getElementById('chapter1Content').innerHTML,
+            chapter2: document.getElementById('chapter2Content').innerHTML
+            // يمكنك إضافة المزيد من الفصول هنا
+        };
+        
         try {
-            const response = await fetch(API_ENDPOINT);
-            const data = await response.json();
-
-            resultsContainer.innerHTML = ''; // مسح رسالة التحميل
-
-            if (response.ok) {
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const resultElement = document.createElement('div');
-                        resultElement.className = 'result-item';
-                        
-                        // بناء العنوان (رابط قابل للنقر)
-                        resultElement.innerHTML = `
-                            <div class="result-title">
-                                <a href="${item.url}" target="_blank">${item.title}</a>
-                            </div>
-                            <div class="result-snippet">${item.snippet || 'لا يوجد ملخص متوفر.'}</div>
-                            <small>${item.url}</small>
-                        `;
-                        resultsContainer.appendChild(resultElement);
-                    });
-                } else {
-                    resultsContainer.innerHTML = '<p style="text-align: center; color: orange;">لم يتم العثور على نتائج مطابقة لاستعلامك.</p>';
-                }
-            } else {
-                // التعامل مع الأخطاء التي تأتي من الخادم (مثل خطأ API Key)
-                resultsContainer.innerHTML = `<p style="text-align: center; color: red;">خطأ: ${data.error || 'حدث خطأ غير متوقع في الخادم.'}</p>`;
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            resultsContainer.innerHTML = '<p style="text-align: center; color: red;">خطأ في الاتصال بالخادم. تأكد من أن تطبيق Flask يعمل.</p>';
+            localStorage.setItem(BOOK_KEY, JSON.stringify(bookData));
+            showMessage('تم حفظ التعديلات بنجاح! المحتوى آمن الآن.', 'success');
+        } catch (e) {
+            showMessage('خطأ في الحفظ: قد تكون مساحة التخزين ممتلئة.', 'error');
         }
-    });
+    }
+
+    /**
+     * يقوم بتحميل المحتوى المحفوظ من Local Storage وتطبيقه على القالب.
+     */
+    function loadContent() {
+        const savedData = localStorage.getItem(BOOK_KEY);
+        if (savedData) {
+            try {
+                const bookData = JSON.parse(savedData);
+                document.getElementById('bookTitle').innerHTML = bookData.title || 'عنوان كتابي الرائع';
+                document.getElementById('chapter1Content').innerHTML = bookData.chapter1 || 'ابدأ بكتابة محتوى الفصل هنا...';
+                document.getElementById('chapter2Content').innerHTML = bookData.chapter2 || 'محتوى الفصل الثاني...';
+                showMessage('تم استعادة آخر تعديلات محفوظة.', 'info');
+            } catch (e) {
+                // في حال وجود خطأ في تحليل بيانات Local Storage
+                localStorage.removeItem(BOOK_KEY);
+            }
+        }
+    }
+
+    /**
+     * يعيد ضبط المحتوى إلى القيمة الافتراضية
+     */
+    function resetContent() {
+        if (confirm('هل أنت متأكد أنك تريد إلغاء جميع التعديلات والعودة إلى القالب الافتراضي؟')) {
+            localStorage.removeItem(BOOK_KEY);
+            // إعادة تحميل الصفحة لتحميل القالب الافتراضي
+            window.location.reload(); 
+        }
+    }
+
+    /**
+     * يعرض رسالة للمستخدم
+     */
+    function showMessage(msg, type) {
+        messageElement.textContent = msg;
+        messageElement.style.display = 'block';
+        
+        // تغيير لون الخلفية بناءً على نوع الرسالة
+        if (type === 'success') {
+            messageElement.style.backgroundColor = '#d4edda';
+            messageElement.style.color = '#155724';
+        } else if (type === 'error') {
+            messageElement.style.backgroundColor = '#f8d7da';
+            messageElement.style.color = '#721c24';
+        } else if (type === 'info') {
+            messageElement.style.backgroundColor = '#cce5ff';
+            messageElement.style.color = '#004085';
+        }
+
+        // إخفاء الرسالة بعد 4 ثوانٍ
+        setTimeout(() => {
+            messageElement.style.display = 'none';
+        }, 4000);
+    }
+    
+    /**
+     * فتح نافذة جديدة لعرض محتوى الكتاب بشكل نهائي (للمحاولة)
+     */
+    function previewContent() {
+        const title = document.getElementById('bookTitle').textContent;
+        const chapter1 = document.getElementById('chapter1Content').innerHTML;
+        const chapter2 = document.getElementById('chapter2Content').innerHTML;
+
+        const previewWindow = window.open('', '_blank');
+        previewWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="ar" dir="rtl">
+            <head>
+                <title>${title}</title>
+                <style>
+                    body { font-family: 'Times New Roman', serif; line-height: 1.6; padding: 50px; text-align: justify; }
+                    h1 { text-align: center; margin-bottom: 50px; font-size: 2.5em; }
+                    h2 { border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 40px; }
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                <h2>الفصل الأول: البداية</h2>
+                <div>${chapter1}</div>
+                <h2>الفصل الثاني: مرحلة التعديلات</h2>
+                <div>${chapter2}</div>
+            </body>
+            </html>
+        `);
+        previewWindow.document.close();
+    }
+
+
+    // _________________ ربط الأحداث (Event Listeners) _________________
+    
+    // تحميل المحتوى عند فتح الصفحة
+    window.onload = loadContent;
+
+    // ربط وظيفة الحفظ بزر الحفظ
+    saveButton.addEventListener('click', saveContent);
+    
+    // ربط وظيفة الإلغاء بزر الإلغاء
+    resetButton.addEventListener('click', resetContent);
+    
+    // ربط وظيفة المعاينة بزر المعاينة
+    previewButton.addEventListener('click', previewContent);
+    
+    // (اختياري): حفظ المحتوى تلقائياً كل 60 ثانية
+    // setInterval(saveContent, 60000); 
+
 </script>
 
 </body>
