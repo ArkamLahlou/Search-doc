@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الباحث الأكاديمي المخصص</title>
+    <style>
+        /* CSS بسيط لتنظيم الواجهة */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: right;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+        }
+        #search-form {
+            display: flex;
+            margin-bottom: 30px;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #search-input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #search-button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #0056b3;
+        }
+        .result-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-title a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .result-snippet {
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.1em;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔎 الباحث الأكاديمي المخصص</h1>
+    <p>أدخل استعلامك للحصول على نتائج بحث مُصفّاة من المصادر الأكاديمية.</p>
+
+    <form id="search-form">
+        <input type="text" id="search-input" placeholder="اكتب موضوع البحث (مثال: أثر الذكاء الاصطناعي على الاقتصاد)" required>
+        <button type="submit" id="search-button">ابحث</button>
+    </form>
+    
+    <div id="results-container">
+        </div>
+</div>
+
+<script>
+    document.getElementById('search-form').addEventListener('submit', async function(e) {
+        e.preventDefault(); // منع تحديث الصفحة التقليدي
+
+        const query = document.getElementById('search-input').value;
+        const resultsContainer = document.getElementById('results-container');
+        
+        // عرض رسالة التحميل
+        resultsContainer.innerHTML = '<div class="loading">جاري البحث، فضلاً انتظر...</div>';
+        
+        // ملاحظة: يجب أن يعمل كود Python/Flask في الخلفية على نفس الجهاز (Localhost:5000)
+        const API_ENDPOINT = 'http://127.0.0.1:5000/search?q=' + encodeURIComponent(query);
+
+        try {
+            const response = await fetch(API_ENDPOINT);
+            const data = await response.json();
+
+            resultsContainer.innerHTML = ''; // مسح رسالة التحميل
+
+            if (response.ok) {
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const resultElement = document.createElement('div');
+                        resultElement.className = 'result-item';
+                        
+                        // بناء العنوان (رابط قابل للنقر)
+                        resultElement.innerHTML = `
+                            <div class="result-title">
+                                <a href="${item.url}" target="_blank">${item.title}</a>
+                            </div>
+                            <div class="result-snippet">${item.snippet || 'لا يوجد ملخص متوفر.'}</div>
+                            <small>${item.url}</small>
+                        `;
+                        resultsContainer.appendChild(resultElement);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p style="text-align: center; color: orange;">لم يتم العثور على نتائج مطابقة لاستعلامك.</p>';
+                }
+            } else {
+                // التعامل مع الأخطاء التي تأتي من الخادم (مثل خطأ API Key)
+                resultsContainer.innerHTML = `<p style="text-align: center; color: red;">خطأ: ${data.error || 'حدث خطأ غير متوقع في الخادم.'}</p>`;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            resultsContainer.innerHTML = '<p style="text-align: center; color: red;">خطأ في الاتصال بالخادم. تأكد من أن تطبيق Flask يعمل.</p>';
+        }
+    });
+</script>
+
+</body>
+</html>
